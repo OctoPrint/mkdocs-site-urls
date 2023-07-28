@@ -9,6 +9,8 @@ Example:
 | `site:images/foo.png` | `https://example.com/` | `/images/foo.png` |
 | `site:images/foo.png` | `https://example.com/bar/` | `/bar/images/foo.png` |
 
+**Please note**: This plugin requires MkDocs 1.5 or higher.
+
 ## Usage
 
 1. Install the plugin from PyPI
