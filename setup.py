@@ -5,7 +5,7 @@ with open("README.md", encoding="utf-8") as f:
 
 setup(
     name="mkdocs-site-urls",
-    version="0.1.0",
+    version="0.2.0",
     author="Gina Häußge",
     author_email="gina@octoprint.org",
     url="https://github.com/OctoPrint/mkdocs-site-urls",
