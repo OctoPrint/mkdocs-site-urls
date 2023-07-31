@@ -1,0 +1,50 @@
+name: Build & publish docs
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: ⬇ Checkout
+        uses: actions/checkout@v3
+
+      - name: 🐍 Set up Python 3.11
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+
+      - name: 🐍 Preinstall some build dependencies
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements-docs.txt
+
+      - name: 🏗 Build docs
+        run: |
+          mkdocs build
+        env:
+          SITE_URL: https://octoprint.github.io/mkdocs-site-urls/
+
+      - name: ⬆ Upload pages artifact
+        uses: actions/upload-pages-artifact@v1
+        with:
+          path: ./site
+
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    needs: build
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: 🚀 Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v1

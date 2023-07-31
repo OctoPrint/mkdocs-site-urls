@@ -1,0 +1,46 @@
+site_name: MkDocs Site URLs Plugin
+site_url: !ENV [SITE_URL, "http://127.0.0.1:8000"]
+dev_addr: 127.0.0.1:8000
+repo_name: OctoPrint/mkdocs-site-urls
+repo_url: https://github.com/OctoPrint/mkdocs-site-urls
+
+nav:
+  - README: index.md
+  - Examples: example/index.md
+
+theme:
+  name: material
+  palette:
+    # Palette toggle for light mode
+    - scheme: default
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+
+    # Palette toggle for dark mode
+    - scheme: slate
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+
+plugins:
+  - include-markdown
+  - search
+  - site-urls:
+      attributes:
+        - src
+        - href
+        - data
+        - data-src
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+
+watch:
+  - docs
+  - mkdocs.yml
+  - README.md
