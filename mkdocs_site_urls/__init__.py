@@ -8,34 +8,40 @@ from mkdocs.config.defaults import MkDocsConfig
 logger = mkdocs.plugins.get_plugin_logger(__name__)
 
 
-class SiteUrlsConfig(mkdocs.config.base.Config):
+class Config(mkdocs.config.base.Config):
     attributes = c.Type(list, default=["href", "src", "data"])
+    prefix = c.Type(str, default="site:")
 
 
-class SiteUrlsPlugin(mkdocs.plugins.BasePlugin[SiteUrlsConfig]):
-    def on_pre_build(self, *, config: MkDocsConfig) -> None:
-        self._regex = re.compile(
-            r"(" + "|".join(self.config["attributes"]) + r')="site:([^"]+)"',
-            re.IGNORECASE,
-        )
+class SiteUrlsPlugin(mkdocs.plugins.BasePlugin[Config]):
+    def on_config(self, config: MkDocsConfig) -> MkDocsConfig:
+        attributes = (re.escape(attr) for attr in self.config["attributes"])
+        self.prefix = re.escape(self.config["prefix"])
+        regex_parts = [
+            r"(", # capturing group 1
+            "|".join(attributes), # attributes
+            r")", # end of capturing group 1
+            r"\s*=\s*", # equals sign with optional whitespace
+            r"([\"'])", # quote with capturing group 2
+            self.prefix, # url prefix
+            r"([^\"']*)", # remainder of the url with capturing group 3
+            r"\2", # matching quote
+        ]
+        regex = "".join(regex_parts)
+        self._regex = re.compile(regex, re.IGNORECASE)
+        return config
 
     @mkdocs.plugins.event_priority(50)
     def on_page_content(self, html, page, config, files):
         site_url = config["site_url"]
+        if not site_url.endswith("/"):
+            site_url += "/"
         path = urllib.parse.urlparse(site_url).path
+        def _replacer(match):
+            attribute = match.group(1)
+            url = match.group(3)
 
-        if not path:
-            path = "/"
-        if not path.endswith("/"):
-            path += "/"
+            logger.info(f"Replacing absolute url '{self.prefix}{url}' with '{path}{url}'")
+            return f'{attribute}="{path}{url}"'
 
-        def _replace(match):
-            param = match.group(1)
-            url = match.group(2)
-            if url.startswith("/"):
-                url = url[1:]
-
-            logger.info(f"Replacing site:{match.group(2)} with {path}{url}")
-            return f'{param}="{path}{url}"'
-
-        return self._regex.sub(_replace, html)
+        return self._regex.sub(_replacer, html)
