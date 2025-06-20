@@ -38,11 +38,11 @@ class SiteUrlsPlugin(mkdocs.plugins.BasePlugin[Config]):
             site_url += "/"
         path = urllib.parse.urlparse(site_url).path
 
-        def _replacer(match):
+        def _replace(match):
             attribute = match.group(1)
             url = match.group(3)
 
             logger.info(f"Replacing absolute url '{self.prefix}{url}' with '{path}{url}'")
             return f'{attribute}="{path}{url}"'
 
-        return self._regex.sub(_replacer, html)
+        return self._regex.sub(_replace, html)
