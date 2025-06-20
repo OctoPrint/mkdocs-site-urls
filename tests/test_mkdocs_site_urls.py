@@ -2,7 +2,8 @@ import re
 from unittest.mock import MagicMock
 
 import pytest
-from resolve_absolute_urls.plugin import ResolveAbsoluteUrlsPlugin
+
+from mkdocs_site_urls import SiteUrlsPlugin
 
 
 @pytest.fixture
@@ -15,7 +16,7 @@ def create_plugin(mock_plugin_config):
     """Factory function to create the plugin with the prescribed configuration options."""
 
     def _plugin(config=mock_plugin_config, **kwargs):
-        plugin = ResolveAbsoluteUrlsPlugin()
+        plugin = SiteUrlsPlugin()
         plugin.load_config(config)
         for key, value in kwargs.items():
             setattr(plugin, key, value)
@@ -94,7 +95,7 @@ def test_on_config_sets_regex(
     match_group3,
     should_match,
 ):
-    """Test the on_config method of the ResolveAbsoluteUrlsPlugin."""
+    """Test the on_config method of the SiteUrlsPlugin."""
     plugin_config = {
         "attributes": attributes,
         "prefix": prefix,
@@ -124,7 +125,7 @@ def test_on_config_sets_regex(
     ids=["trailing_slash", "no_trailing_slash"],
 )
 def test_on_page_content(create_plugin, site_url):
-    """Test the on_page_content method of the ResolveAbsoluteUrlsPlugin."""
+    """Test the on_page_content method of the SiteUrlsPlugin."""
     plugin = create_plugin(
         {
             "attributes": ["src", "data"],
