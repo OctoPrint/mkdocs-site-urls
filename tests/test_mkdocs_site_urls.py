@@ -1,9 +1,9 @@
 import re
+from unittest.mock import MagicMock
 
 import pytest
-
-from unittest.mock import MagicMock
 from resolve_absolute_urls.plugin import ResolveAbsoluteUrlsPlugin
+
 
 @pytest.fixture
 def mock_plugin_config():
@@ -114,6 +114,7 @@ def test_on_config_sets_regex(
     else:
         assert match is None
 
+
 @pytest.mark.parametrize(
     "site_url",
     [
@@ -124,27 +125,29 @@ def test_on_config_sets_regex(
 )
 def test_on_page_content(create_plugin, site_url):
     """Test the on_page_content method of the ResolveAbsoluteUrlsPlugin."""
-    plugin = create_plugin({
-        "attributes": ["src", "data"],
-        "prefix": "prefix",
-    })
+    plugin = create_plugin(
+        {
+            "attributes": ["src", "data"],
+            "prefix": "prefix",
+        }
+    )
     page = MagicMock()
     config = MagicMock()
     config.__getitem__.side_effect = lambda key: site_url if key == "site_url" else None
     files = MagicMock()
-    html = '''
+    html = """
     <img src  ="prefixexample.png" alt="Image">
     <img data =  \'prefix/image.png\'>
     <img data="site:docs/image.svg" class="example">
     <img attr  ="prefix/docs/image.png" >
-    '''
+    """
 
     plugin.on_config(config)
     result = plugin.on_page_content(html, page, config, files)
-    expected_result = '''
+    expected_result = """
     <img src="/docs/subpage/example.png" alt="Image">
     <img data="/docs/subpage//image.png">
     <img data="site:docs/image.svg" class="example">
     <img attr  ="prefix/docs/image.png" >
-    '''
+    """
     assert result == expected_result

@@ -18,14 +18,14 @@ class SiteUrlsPlugin(mkdocs.plugins.BasePlugin[Config]):
         attributes = (re.escape(attr) for attr in self.config["attributes"])
         self.prefix = re.escape(self.config["prefix"])
         regex_parts = [
-            r"(", # capturing group 1
-            "|".join(attributes), # attributes
-            r")", # end of capturing group 1
-            r"\s*=\s*", # equals sign with optional whitespace
-            r"([\"'])", # quote with capturing group 2
-            self.prefix, # url prefix
-            r"([^\"']*)", # remainder of the url with capturing group 3
-            r"\2", # matching quote
+            r"(",  # capturing group 1
+            "|".join(attributes),  # attributes
+            r")",  # end of capturing group 1
+            r"\s*=\s*",  # equals sign with optional whitespace
+            r"([\"'])",  # quote with capturing group 2
+            self.prefix,  # url prefix
+            r"([^\"']*)",  # remainder of the url with capturing group 3
+            r"\2",  # matching quote
         ]
         regex = "".join(regex_parts)
         self._regex = re.compile(regex, re.IGNORECASE)
@@ -37,6 +37,7 @@ class SiteUrlsPlugin(mkdocs.plugins.BasePlugin[Config]):
         if not site_url.endswith("/"):
             site_url += "/"
         path = urllib.parse.urlparse(site_url).path
+
         def _replacer(match):
             attribute = match.group(1)
             url = match.group(3)
