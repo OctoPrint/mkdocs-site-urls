@@ -55,10 +55,33 @@ plugins:
 Be advised that in case of any customization on your part you need to include the default attributes as well if you want
 to keep them, as the default list will not be included automatically anymore.
 
+If `site:` as the prefix does not work for you for any reason, you can also configure that,
+e.g.
+
+```yaml
+plugins:
+  - site-urls:
+      prefix: "relative:"
+```
+
+This can also be used to interpret absolute URLs like `/example/file.png` as relative,
+by setting the `prefix` to `/`.
+
 ## How it works
 
 The plugin hooks into the [`on_page_content` event](https://www.mkdocs.org/dev-guide/plugins/#on_page_content)
 and replaces all URLs in the configured attributes (by default `href`, `src` or `data`) in the rendered HTML with the corresponding site-relative URLs.
+
+## Development
+
+1. Create a venv & activate it, e.g. `python -m venv venv && source venv/bin/activate`
+2. Install the dev requirements: `pip install -r requirements-dev.txt`
+3. Install the `pre-commit` hooks: `pre-commit install`
+
+You can run the tests with `pytest`.
+
+To build the docs, install their dependencies as well (`pip install -r requirements-docs.txt`),
+then run `mkdocs build`.
 
 ## License
 
