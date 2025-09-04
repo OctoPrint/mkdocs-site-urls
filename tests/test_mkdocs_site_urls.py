@@ -76,6 +76,22 @@ def create_plugin(mock_plugin_config):
             None,
             False,
         ),  # invalid_different_attribute
+        (
+            ["hre."],
+            "/",
+            "href='/image.png'",
+            None,
+            None,
+            False,
+        ),  # invalid_regex_escaped1
+        (
+            ["href"],
+            ".",
+            "href='/image.png'",
+            None,
+            None,
+            False,
+        ),  # invalid_regex_escaped2
     ],
     ids=[
         "valid1",
@@ -84,6 +100,8 @@ def create_plugin(mock_plugin_config):
         "invalid_different_prefix",
         "invalid_different_prefix2",
         "invalid_different_attribute",
+        "invalid_regex_escaped1",
+        "invalid_regex_escaped_2",
     ],
 )
 def test_on_config_sets_regex(
