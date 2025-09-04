@@ -1,3 +1,8 @@
+> [!NOTE]
+> The maintainer of this plugin (currently) doesn't use mkdocs herself, so consider this plugin in a "provided as-is" situation. PRs are welcome and the maintainer will do
+> what she can to review them in time, and she will also do her best to look at any bug reports and solve them if possible. But be aware that this project has a low priority
+> on the maintainer's very full TODO list.
+
 # MkDocs Site URLs Plugin
 
 ![GitHub release](https://img.shields.io/github/v/release/OctoPrint/mkdocs-site-urls?logo=github&logoColor=white)
