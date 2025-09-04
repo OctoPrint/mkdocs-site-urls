@@ -12,10 +12,11 @@ A MkDocs plugin that adds support for site-relative `site:` URLs.
 
 Example:
 
-| URL | site_url | resulting URL |
-| --- | -------- | ------------- |
-| `site:images/foo.png` | `https://example.com/` | `/images/foo.png` |
-| `site:images/foo.png` | `https://example.com/bar/` | `/bar/images/foo.png` |
+| URL                   | site_url                    | resulting URL          |
+| --------------------- | --------------------------- | ---------------------- |
+| `site:images/foo.png` | `https://example.com/`      | `/images/foo.png`      |
+| `site:images/foo.png` | `https://example.com/path/` | `/path/images/foo.png` |
+| `site:images/foo.png` | unset/empty                 | `/images/foo.png`      |
 
 **Please note**: This plugin requires MkDocs 1.5 or higher.
 
@@ -66,6 +67,9 @@ plugins:
 
 This can also be used to interpret absolute URLs like `/example/file.png` as relative,
 by setting the `prefix` to `/`.
+
+The plugin will extract the path prefix to use from the [`site_url`](https://www.mkdocs.org/user-guide/configuration/#site_url).
+configured in your `mkdocs.yaml`. If no `site_url` is configured, it will default to using the root path `/`.
 
 ## How it works
 

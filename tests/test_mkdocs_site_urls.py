@@ -29,27 +29,27 @@ def create_plugin(mock_plugin_config):
     "attributes, prefix, string_to_match, match_group1, match_group3, should_match",
     [
         (
+            ["data"],
+            "site:",
+            "data=   'site:image.png'",
+            "data",
+            "image.png",
+            True,
+        ),  # valid1
+        (
             ["href", "src"],
             "/docs/",
             'src = "/docs/image.png"',
             "src",
             "image.png",
             True,
-        ),  # valid1
+        ),  # valid2
         (
             ["href", "src"],
             "/",
             "href ='/docs/image.png'",
             "href",
             "docs/image.png",
-            True,
-        ),  # valid2
-        (
-            ["data"],
-            "site:",
-            "data=   'site:image.png'",
-            "data",
-            "image.png",
             True,
         ),  # valid3
         (
@@ -117,38 +117,58 @@ def test_on_config_sets_regex(
 
 
 @pytest.mark.parametrize(
-    "site_url",
+    "prefix, site_url, expected_path",
     [
-        "https://example.com/docs/subpage/",
-        "https://example.com/docs/subpage",
+        ("site:", "https://example.com", "/"),
+        ("site:", "https://example.com/docs/subpage/", "/docs/subpage/"),
+        ("site:", "https://example.com/docs/subpage", "/docs/subpage/"),
+        ("site:", None, "/"),
+        ("site:", "", "/"),
+        ("prefix", None, "/"),
+        ("/", "https://example.com/docs/subpage/", "/docs/subpage/"),
     ],
-    ids=["trailing_slash", "no_trailing_slash"],
+    ids=[
+        "basic",
+        "path_trailing_slash",
+        "path_no_trailing_slash",
+        "none_siteurl",
+        "empty_siteurl",
+        "custom_prefix",
+        "slash_as_prefix",
+    ],
 )
-def test_on_page_content(create_plugin, site_url):
+def test_on_page_content(create_plugin, prefix, site_url, expected_path):
     """Test the on_page_content method of the SiteUrlsPlugin."""
     plugin = create_plugin(
         {
-            "attributes": ["src", "data"],
-            "prefix": "prefix",
+            "attributes": ["src", "data", "href"],
+            "prefix": prefix,
         }
     )
     page = MagicMock()
     config = MagicMock()
-    config.__getitem__.side_effect = lambda key: site_url if key == "site_url" else None
+    config.get.side_effect = (
+        lambda key, default=None: site_url
+        if key == "site_url" and site_url is not None
+        else default
+    )
     files = MagicMock()
-    html = """
-    <img src  ="prefixexample.png" alt="Image">
-    <img data =  \'prefix/image.png\'>
-    <img data="site:docs/image.svg" class="example">
-    <img attr  ="prefix/docs/image.png" >
+
+    html = f"""
+    <img src  ="{prefix}example.png" alt="Image">
+    <img data =  \'{prefix}/image.png\'>
+    <img data="{prefix}docs/image.svg" class="example">
+    <img attr  ="{prefix}/docs/image.png" title="this won't get touched, wrong attribute" >
+    <img href = "NOT_A_PREFIX/foo/image.png" title="neither will this, wrong prefix">
     """
 
     plugin.on_config(config)
     result = plugin.on_page_content(html, page, config, files)
-    expected_result = """
-    <img src="/docs/subpage/example.png" alt="Image">
-    <img data="/docs/subpage//image.png">
-    <img data="site:docs/image.svg" class="example">
-    <img attr  ="prefix/docs/image.png" >
+    expected_result = f"""
+    <img src="{expected_path}example.png" alt="Image">
+    <img data="{expected_path}/image.png">
+    <img data="{expected_path}docs/image.svg" class="example">
+    <img attr  ="{prefix}/docs/image.png" title="this won't get touched, wrong attribute" >
+    <img href = "NOT_A_PREFIX/foo/image.png" title="neither will this, wrong prefix">
     """
     assert result == expected_result

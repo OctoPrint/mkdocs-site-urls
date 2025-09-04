@@ -33,7 +33,9 @@ class SiteUrlsPlugin(mkdocs.plugins.BasePlugin[Config]):
 
     @mkdocs.plugins.event_priority(50)
     def on_page_content(self, html, page, config, files):
-        site_url = config["site_url"]
+        site_url = config.get("site_url")
+        if not site_url:
+            site_url = ""
         if not site_url.endswith("/"):
             site_url += "/"
         path = urllib.parse.urlparse(site_url).path
