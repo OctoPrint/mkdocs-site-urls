@@ -1,7 +1,6 @@
 > [!NOTE]
-> The maintainer of this plugin (currently) doesn't use mkdocs herself, so consider this plugin in a "provided as-is" situation. PRs are welcome and the maintainer will do
-> what she can to review them in time, and she will also do her best to look at any bug reports and solve them if possible. But be aware that this project has a low priority
-> on the maintainer's very full TODO list.
+> As the maintainer of this plugin no longer utilizes mkdocs herself and mkdocs also appears to be abandoned, this repository has been
+> archived as of 2026-03-04.
 
 # MkDocs Site URLs Plugin
 
@@ -37,6 +36,7 @@ Example:
      - site-urls
    ```
 3. Start using site-relative URLs in your Markdown files by prefixing them with `site:`:
+
    ```markdown
    [Link to another page](site:another-page/relative/to/the/site/root)
 
